@@ -1,0 +1,130 @@
+    <div class="container">
+      <div class="header" @fadeInOut>
+        <h1 class="main-title">
+          <span class="dna-icon">🧬</span>
+          Detector de Mutantes
+          <span class="dna-icon">🧬</span>
+        </h1>
+        <p class="subtitle">Analiza secuencias de ADN para detectar mutaciones genéticas</p>
+      </div>
+
+      <div class="main-content">
+        <div class="input-section card" @fadeInOut>
+          <h2>Ingresa la Secuencia de ADN</h2>
+          <p class="description">
+            Cada fila debe contener solo las letras: <strong>A, T, C, G</strong> (bases nitrogenadas)
+          </p>
+          
+          <div class="size-selector">
+            <label for="matrixSize">Tamaño de la matriz:</label>
+            <select id="matrixSize" [(ngModel)]="matrixSize" (change)="generateMatrix()" class="size-select">
+              <option value="4">4x4</option>
+              <option value="6">6x6</option>
+              <option value="8">8x8</option>
+              <option value="10">10x10</option>
+            </select>
+          </div>
+
+          <div class="dna-matrix" [attr.data-size]="matrixSize">
+            <div class="matrix-row" *ngFor="let row of dnaMatrix; let i = index">
+              <input 
+                type="text" 
+                [(ngModel)]="dnaMatrix[i]"
+                [attr.maxlength]="matrixSize"
+                (input)="validateInput(i, $event)"
+                class="dna-input"
+                [class.invalid]="!isValidSequence(dnaMatrix[i])"
+                placeholder="{{getPlaceholder(i)}}"
+              >
+            </div>
+          </div>
+
+          <div class="buttons-container">
+            <button 
+              (click)="loadExample()" 
+              class="btn btn-secondary"
+              [disabled]="isLoading"
+            >
+              📝 Cargar Ejemplo
+            </button>
+            
+            <button 
+              (click)="generateRandom()" 
+              class="btn btn-secondary"
+              [disabled]="isLoading"
+            >
+              🎲 Generar Aleatorio
+            </button>
+            
+            <button 
+              (click)="clearMatrix()" 
+              class="btn btn-secondary"
+              [disabled]="isLoading"
+            >
+              🗑️ Limpiar
+            </button>
+          </div>
+
+          <button 
+            (click)="analyzeDNA()" 
+            class="btn btn-primary analyze-btn"
+            [disabled]="isLoading || !isValidMatrix()"
+            [@pulseAnimation]="animationTrigger"
+          >
+            <span *ngIf="!isLoading">🔬 Analizar ADN</span>
+            <span *ngIf="isLoading" class="loading-content">
+              <span class="loading-spinner"></span>
+              Analizando...
+            </span>
+          </button>
+        </div>
+
+        <div class="results-section" *ngIf="result" @fadeInOut>
+          <div class="card result-card" [ngClass]="{'mutant-result': result.isMutant, 'human-result': !result.isMutant}">
+            <div class="result-icon">
+              {{ result.isMutant ? '👽' : '👤' }}
+            </div>
+            <h3>{{ result.isMutant ? '¡MUTANTE DETECTADO!' : 'HUMANO NORMAL' }}</h3>
+            <p class="result-message">{{ result.message }}</p>
+            
+            <div class="dna-visualization" *ngIf="visualizationMatrix.length > 0">
+              <h4>Visualización de la Secuencia:</h4>
+              <div class="visual-matrix" [attr.data-size]="matrixSize">
+                <div class="visual-row" *ngFor="let row of visualizationMatrix; let i = index">
+                  <div 
+                    class="visual-cell" 
+                    *ngFor="let cell of row; let j = index"
+                    [ngClass]="getBaseClass(cell)"
+                    [@cellHighlight]="animationTrigger"
+                  >
+                    {{ cell }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section card" @fadeInOut>
+          <h3>ℹ️ Información sobre el Algoritmo</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <h4>🔍 Detección</h4>
+              <p>Busca secuencias de 4 letras iguales consecutivas</p>
+            </div>
+            <div class="info-item">
+              <h4>➡️ Direcciones</h4>
+              <p>Horizontal, vertical, diagonal y anti-diagonal</p>
+            </div>
+            <div class="info-item">
+              <h4>🧮 Criterio</h4>
+              <p>Más de una secuencia = mutante</p>
+            </div>
+            <div class="info-item">
+              <h4>⚡ Eficiencia</h4>
+              <p>Optimizado para parar en la primera detección</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

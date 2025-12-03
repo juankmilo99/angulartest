@@ -1,0 +1,16 @@
+{
+  "name": "mutant-detector",
+  "version": "1.0.0",
+  "description": "Prueba técnica: Detector de mutantes basado en secuencias de ADN",
+  "author": "Juan Camilo",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start",
+    "dev": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "test-backend": "cd backend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
